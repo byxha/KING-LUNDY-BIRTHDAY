@@ -8,12 +8,13 @@ body {
     background-color: #000000;
     color: #ffffff;
     font-family: 'Comic Sans MS', cursive;
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+    flex-direction: column;
 }
 
 /* Stars Background */
@@ -52,8 +53,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 40px 20px;
+    height: 100%;
 }
 
 /* Countdown Section */
@@ -141,9 +143,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px 20px;
+    padding: 20px;
     width: 100%;
-    margin-top: 60px;
 }
 
 #surprise-section.hidden {
