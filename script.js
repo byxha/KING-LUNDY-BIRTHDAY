@@ -21,7 +21,7 @@ function createStars() {
 
 // Countdown timer
 function startCountdown() {
-    const targetDate = new Date('July 19, 2026 00:00:00').getTime();
+    const targetDate = new Date('July 16, 2026 00:00:00').getTime();
 
     function updateCountdown() {
         const now = Date.now();
