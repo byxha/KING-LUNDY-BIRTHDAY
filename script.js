@@ -24,34 +24,74 @@ function startCountdown() {
     const targetDate = new Date('July 19, 2026 00:00:00').getTime();
 
     function updateCountdown() {
-        const now = new Date().getTime();
+        const now = Date.now();
         const distance = targetDate - now;
 
         if (distance <= 0) {
-            // Countdown finished
+            // Countdown finished: ensure display shows zeros and reveal/enable buttons
+            document.getElementById('days').textContent = '00';
+            document.getElementById('hours').textContent = '00';
+            document.getElementById('minutes').textContent = '00';
+            document.getElementById('seconds').textContent = '00';
+
             revealSurprise();
             return;
         }
 
-        // TEMPORARY: Set all to 00
-        document.getElementById('days').textContent = '00';
-        document.getElementById('hours').textContent = '00';
-        document.getElementById('minutes').textContent = '00';
-        document.getElementById('seconds').textContent = '00';
+        // calculate time parts
+        const seconds = Math.floor((distance / 1000) % 60);
+        const minutes = Math.floor((distance / (1000 * 60)) % 60);
+        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+
+        // format with leading zeros
+        const fmt = (n) => String(n).padStart(2, '0');
+
+        document.getElementById('days').textContent = fmt(days);
+        document.getElementById('hours').textContent = fmt(hours);
+        document.getElementById('minutes').textContent = fmt(minutes);
+        document.getElementById('seconds').textContent = fmt(seconds);
     }
 
+    // run once immediately and then every second
     updateCountdown();
-    setInterval(updateCountdown, 1000);
+    const intervalId = setInterval(updateCountdown, 1000);
 }
 
 // Reveal surprise section when countdown reaches zero
 function revealSurprise() {
-    const countdownSection = document.getElementById('countdown-section');
+    // We keep the countdown visible per user preference.
+    // Enable the YES/NO buttons so they become clickable now that the countdown finished.
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
     const surpriseSection = document.getElementById('surprise-section');
-    
-    countdownSection.style.display = 'none';
-    surpriseSection.classList.remove('hidden');
-    
+
+    // ensure surprise section is visible (index.html currently shows it by default)
+    if (surpriseSection && surpriseSection.classList.contains('hidden')) {
+        surpriseSection.classList.remove('hidden');
+    }
+
+    if (yesBtn) {
+        yesBtn.disabled = false;
+        yesBtn.style.opacity = '1';
+        yesBtn.style.cursor = 'pointer';
+        yesBtn.removeAttribute('aria-disabled');
+        // focus YES for accessibility
+        setTimeout(() => yesBtn.focus(), 50);
+        // keep existing behavior: navigate to surprise.html when clicked
+        yesBtn.addEventListener('click', function() {
+            window.location.href = 'surprise.html';
+        });
+    }
+
+    if (noBtn) {
+        noBtn.disabled = false;
+        noBtn.style.opacity = '1';
+        noBtn.style.cursor = 'pointer';
+        noBtn.removeAttribute('aria-disabled');
+    }
+
+    // set up NO button behavior now that it's enabled
     setupNoButtonBehavior();
 }
 
@@ -74,14 +114,22 @@ function setupNoButtonBehavior() {
     });
 
     // NO button escape on hover/approach
-    noBtn.addEventListener('mouseenter', function(e) {
+    if (!noBtn) return; // guard
+
+    // Remove any previous listeners (defensive) by cloning the node
+    const newNoBtn = noBtn.cloneNode(true);
+    noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+
+    newNoBtn.addEventListener('mouseenter', function(e) {
+        // don't try to escape if it's not enabled
+        if (newNoBtn.disabled) return;
         if (isEscaping) return;
         
         isEscaping = true;
         escapeCount++;
 
         // Get button position
-        const btnRect = noBtn.getBoundingClientRect();
+        const btnRect = newNoBtn.getBoundingClientRect();
         const btnCenterX = btnRect.left + btnRect.width / 2;
         const btnCenterY = btnRect.top + btnRect.height / 2;
 
@@ -90,7 +138,7 @@ function setupNoButtonBehavior() {
         const directionY = btnCenterY - mouseY;
 
         // Normalize direction
-        const distance = Math.sqrt(directionX * directionX + directionY * directionY);
+        const distance = Math.sqrt(directionX * directionX + directionY * directionY) || 1;
         const normalizedX = directionX / distance;
         const normalizedY = directionY / distance;
 
@@ -106,21 +154,17 @@ function setupNoButtonBehavior() {
 
         if (escapeCount < 3) {
             // Regular escape
-            animateNoButtonEscape(noBtn, newX, newY, () => {
+            animateNoButtonEscape(newNoBtn, newX, newY, () => {
                 isEscaping = false;
             });
         } else {
             // Final escape with legs
             if (!hasLegs) {
-                addLegsToNoButton(noBtn);
+                addLegsToNoButton(newNoBtn);
                 hasLegs = true;
             }
-            animateNoButtonFinalEscape(noBtn, newX, newY, buttonsContainer);
+            animateNoButtonFinalEscape(newNoBtn, newX, newY, buttonsContainer);
         }
-    });
-
-    yesBtn.addEventListener('click', function() {
-        window.location.href = 'surprise.html';
     });
 }
 
@@ -154,7 +198,7 @@ function animateNoButtonFinalEscape(btn, targetX, targetY, container) {
     
     const dirX = targetX - centerX;
     const dirY = targetY - centerY;
-    const distance = Math.sqrt(dirX * dirX + dirY * dirY);
+    const distance = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
     
     const normalizedX = dirX / distance;
     const normalizedY = dirY / distance;
