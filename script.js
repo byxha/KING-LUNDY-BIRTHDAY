@@ -169,7 +169,8 @@ function setupNoButtonBehavior() {
 }
 
 function animateNoButtonEscape(btn, targetX, targetY, callback) {
-    btn.style.position = 'fixed';
+    // Use absolute positioning relative to document
+    btn.style.position = 'absolute';
     btn.style.transition = 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     btn.style.left = targetX + 'px';
     btn.style.top = targetY + 'px';
