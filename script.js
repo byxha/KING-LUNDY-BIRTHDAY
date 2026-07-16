@@ -142,23 +142,23 @@ function setupNoButtonBehavior() {
         const normalizedX = directionX / distance;
         const normalizedY = directionY / distance;
 
-        // Escape distance (250-400px depending on which escape this is)
-        let escapeDistance = 300;
+        // Escape distance
+        let escapeDistance = 350;
         if (escapeCount === 3) {
             escapeDistance = 500; // Longer for final escape
         }
 
-        // Calculate new position
+        // Calculate new position - always opposite to cursor
         const newX = btnCenterX + normalizedX * escapeDistance;
         const newY = btnCenterY + normalizedY * escapeDistance;
 
         if (escapeCount < 3) {
-            // Regular escape
+            // Regular escape with smooth animation
             animateNoButtonEscape(newNoBtn, newX, newY, () => {
                 isEscaping = false;
             });
         } else {
-            // Final escape with legs
+            // Final escape with legs - runs far away
             if (!hasLegs) {
                 addLegsToNoButton(newNoBtn);
                 hasLegs = true;
@@ -171,12 +171,12 @@ function setupNoButtonBehavior() {
 function animateNoButtonEscape(btn, targetX, targetY, callback) {
     // Use absolute positioning relative to document
     btn.style.position = 'absolute';
-    btn.style.transition = 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    btn.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     btn.style.left = targetX + 'px';
     btn.style.top = targetY + 'px';
     btn.style.transform = 'translate(-50%, -50%)';
 
-    setTimeout(callback, 500);
+    setTimeout(callback, 400);
 }
 
 function addLegsToNoButton(btn) {
@@ -193,7 +193,7 @@ function addLegsToNoButton(btn) {
 function animateNoButtonFinalEscape(btn, targetX, targetY, container) {
     btn.style.position = 'fixed';
     
-    // Calculate escape direction (away from viewport center towards farther distance)
+    // Calculate direction away from viewport center
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
     
@@ -204,21 +204,21 @@ function animateNoButtonFinalEscape(btn, targetX, targetY, container) {
     const normalizedX = dirX / distance;
     const normalizedY = dirY / distance;
     
-    // Final escape position - very far outside viewport
-    const finalX = centerX + normalizedX * 1200;
-    const finalY = centerY + normalizedY * 1200;
+    // Final escape position - very far outside viewport (1500px away)
+    const finalX = centerX + normalizedX * 1500;
+    const finalY = centerY + normalizedY * 1500;
     
-    // Start running animation
-    btn.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    // Start running animation with playful scaling
+    btn.style.transition = 'all 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     btn.style.left = finalX + 'px';
     btn.style.top = finalY + 'px';
-    btn.style.transform = 'translate(-50%, -50%) scale(0.5)';
+    btn.style.transform = 'translate(-50%, -50%) scale(0.3)';
     btn.style.opacity = '0';
     
     // Remove button after animation completes
     setTimeout(() => {
         btn.remove();
-    }, 2000);
+    }, 2500);
 }
 
 // Initialize
