@@ -8,12 +8,12 @@ body {
     background-color: #000000;
     color: #ffffff;
     font-family: 'Comic Sans MS', cursive;
-    overflow: hidden;
+    overflow-x: hidden;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 /* Stars Background */
@@ -45,7 +45,18 @@ body {
     }
 }
 
-/* Main Content */
+/* Main Container */
+#main-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 40px 20px;
+}
+
+/* Countdown Section */
 #countdown-section {
     position: relative;
     z-index: 2;
@@ -54,7 +65,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
     padding: 20px;
     width: 100%;
 }
@@ -131,9 +141,9 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    padding: 40px 20px;
     width: 100%;
+    margin-top: 60px;
 }
 
 #surprise-section.hidden {
